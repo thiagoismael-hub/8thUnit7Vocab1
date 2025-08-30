@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visual Communication</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background:#e0f2fe; color:#1a202c; }
+    .container { max-width: 900px; padding: 2rem; }
+    .card { background:#fff; border-radius:1.5rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:2rem; }
+    .paragraph { opacity:0; max-height:0; overflow:hidden; transition:all 0.5s ease-in-out; }
+    .paragraph-visible { opacity:1; max-height:1000px; margin-bottom:1.5rem; }
+    button { background:#3b82f6; color:#fff; padding:0.75rem 1.5rem; border-radius:9999px; font-weight:bold; transition:background 0.3s; }
+    button:hover { background:#2563eb; }
+    button:disabled { background:#9ca3af; cursor:not-allowed; }
+    #loading-indicator { border:4px solid #f3f3f3; border-top:4px solid #3498db; border-radius:50%; width:24px; height:24px; animation:spin 1s linear infinite; }
+    @keyframes spin { 0%{transform:rotate(0deg)}100%{transform:rotate(360deg)} }
+    .clickable-term { font-weight:bold; cursor:pointer; text-decoration:underline; text-decoration-color:#f9a8d4; text-underline-offset:4px; }
+    .clickable-term:hover { text-decoration-color:#ec4899; }
+    .highlighted { background:#fef08a; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:1000; }
+    .modal-content { background:#fff; padding:2rem; border-radius:1rem; box-shadow:0 10px 25px rgba(0,0,0,0.2); max-width:500px; text-align:center; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+  <div class="container mx-auto">
+    <div class="card">
+      <h1 class="text-4xl font-bold text-center mb-8 text-blue-800">Visual Communication 🎨👁️</h1>
+
+      <div id="text-container">
+        <p id="p1" class="paragraph text-lg leading-relaxed">
+          Stories have been a <span class="clickable-term highlighted" data-definition="Having a strong purpose or meaning.">meaningful</span> form of communication throughout human history. Do you remember a time when a family member told you a story without reading it from a book? <span class="clickable-term highlighted" data-definition="Stories told by speaking, not reading from a book.">Oral stories</span> are a part of every culture, and they allow us to pass traditions and values from one generation to the next. <span class="clickable-term highlighted" data-definition="Stories told with drawings or pictures instead of words.">Visual stories</span> have also been told in a variety of ways for thousands of years. Researchers have found rocks that were decorated by humans more than 10,000 years ago in caves around the world. These drawings were created with mineral pigments, and they told a story of daily life, including events such as hunts or animal migrations. Although the rocks had only simple linear <span class="clickable-term highlighted" data-definition="A repeated drawing or shape.">patterns</span>, the patterns had meaning. And it’s meaning that creates a story.
+        </p>
+
+        <p id="p2" class="paragraph text-lg leading-relaxed">
+          People began painting on cave walls around 40,000 years ago. As time went on, painted <span class="clickable-term highlighted" data-definition="Drawings of a person or thing.">images</span> appeared on everything from <span class="clickable-term highlighted" data-definition="Objects made from baked clay, such as bowls or pots.">pottery</span> to <span class="clickable-term highlighted" data-definition="A strong fabric used to paint pictures.">canvas</span>. Painting is a fairly permanent way to <span class="clickable-term highlighted" data-definition="To show or signify something.">represent</span> information. Because painted walls and objects have lasted for thousands of years, they give us a window into the past. Through this window we can see the stories of ancient Egyptians on the walls of their <span class="clickable-term highlighted" data-definition="A large room or building for burying dead people.">tombs</span>. We can also see scenes from Renaissance Europe, showing the lives of people from kings to <span class="clickable-term highlighted" data-definition="Ordinary people who are not of royalty.">commoners</span>. These paintings allow us to be <span class="clickable-term highlighted" data-definition="A person who watches an event happen.">witnesses</span> to history.
+        </p>
+
+        <p id="p3" class="paragraph text-lg leading-relaxed">
+          In the early nineteenth century, French artist Louis-Jacques-Mandé Daguerre introduced a device that provided another way to tell visual stories: the <i>daguerreotype</i>. This early camera was first used to take <span class="clickable-term highlighted" data-definition="Pictures of a person, especially their face.">portraits</span>. Photography with other subjects eventually became popular, but it took a while. At first people were afraid of a camera’s ability to capture real life!
+        </p>
+
+        <p id="p4" class="paragraph text-lg leading-relaxed">
+          Today photographers like Ami Vitale use photos to <span class="clickable-term highlighted" data-definition="To show or describe something.">portray</span> how people live. Ami presents her photos in ways that create certain responses from her <span class="clickable-term highlighted" data-definition="The people who watch or listen to something.">audience</span>, such as <span class="clickable-term highlighted" data-definition="A strong feeling of being angry or mad.">anger</span> or <span class="clickable-term highlighted" data-definition="A strong feeling of surprise or disturbance.">shock</span>. “Photography creates change,” she says. Ami hopes that by telling her <span class="clickable-term highlighted" data-definition="The main person or thing in a photo or story.">subjects’</span> stories visually, she’ll get people to realize that we’re more alike than we are different. This will create a greater <span class="clickable-term highlighted" data-definition="The ability to know and feel for something.">understanding</span> among people around the world.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-center items-center mt-8 space-y-4 sm:space-y-0 sm:space-x-4">
+        <button id="show-next-btn">Show Next Paragraph</button>
+        <button id="read-aloud-btn">Read Aloud</button>
+        <div id="loading-indicator" class="hidden"></div>
+      </div>
+      <div id="message-box" class="mt-4 text-center text-red-500 font-bold"></div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="definition-modal" class="modal-overlay hidden" onclick="closeModal(event)">
+    <div class="modal-content">
+      <h3 id="modal-term" class="text-2xl font-bold mb-2"></h3>
+      <p id="modal-definition" class="text-lg"></p>
+    </div>
+  </div>
+
+  <script>
+    // 🔑 Optional: add your Google Gemini API key for neural TTS. If empty, it uses browser speech.
+    const apiKey = "";
+
+    const showNextBtn = document.getElementById('show-next-btn');
+    const readAloudBtn = document.getElementById('read-aloud-btn');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const messageBox = document.getElementById('message-box');
+    const modal = document.getElementById('definition-modal');
+    const modalTerm = document.getElementById('modal-term');
+    const modalDefinition = document.getElementById('modal-definition');
+
+    let paragraphs = [];
+    let paragraphIndex = 0;
+    let audioPlayer = null;
+    let audioUrl = null;
+
+    window.onload = function () {
+      paragraphs = [p1, p2, p3, p4];
+      if (paragraphs.length > 0) {
+        paragraphs[0].classList.add('paragraph-visible');
+        paragraphIndex = 1;
+      }
+      document.getElementById('text-container').addEventListener('click', (e) => {
+        if (e.target.classList.contains('clickable-term')) {
+          showDefinition(e.target.textContent, e.target.dataset.definition);
+        }
+      });
+    };
+
+    showNextBtn.addEventListener('click', () => {
+      if (paragraphIndex < paragraphs.length) {
+        paragraphs[paragraphIndex].classList.add('paragraph-visible');
+        paragraphIndex++;
+      }
+      if (paragraphIndex >= paragraphs.length) showNextBtn.disabled = true;
+    });
+
+    readAloudBtn.addEventListener('click', async () => {
+      const allText = Array.from(document.querySelectorAll('#text-container .paragraph-visible'))
+        .map(p => p.innerText)
+        .join(' ');
+
+      if (!allText.trim()) {
+        showMessage("Nothing to read yet!");
+        return;
+      }
+
+      // Toggle playback if already created
+      if (audioPlayer && !audioPlayer.paused) {
+        audioPlayer.pause();
+        readAloudBtn.textContent = 'Continue Reading';
+        return;
+      } else if (audioPlayer && audioPlayer.paused) {
+        audioPlayer.play();
+        readAloudBtn.textContent = 'Pause Reading';
+        return;
+      }
+
+      if (!apiKey) {
+        browserSpeak(allText);
+        return;
+      }
+
+      readAloudBtn.textContent = 'Loading...';
+      readAloudBtn.disabled = true;
+      loadingIndicator.classList.remove('hidden');
+
+      try {
+        const payload = {
+          contents: [{ parts: [{ text: allText }] }],
+          generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } } }
+          },
+          model: "gemini-2.0-flash-tts"
+        };
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-tts:generateContent?key=${apiKey}`;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error("API error " + response.status);
+        const result = await response.json();
+
+        const part = result?.candidates?.[0]?.content?.parts?.[0];
+        const audioData = part?.inlineData?.data;
+        const mimeType = part?.inlineData?.mimeType;
+        if (!audioData) throw new Error("No audio data");
+
+        const byteCharacters = atob(audioData);
+        const byteArray = new Uint8Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) byteArray[i] = byteCharacters.charCodeAt(i);
+        const audioBlob = new Blob([byteArray], { type: mimeType });
+
+        if (audioUrl) URL.revokeObjectURL(audioUrl);
+        audioUrl = URL.createObjectURL(audioBlob);
+
+        audioPlayer = new Audio(audioUrl);
+        audioPlayer.play();
+        readAloudBtn.textContent = 'Pause Reading';
+
+        audioPlayer.onended = () => {
+          readAloudBtn.textContent = 'Read Aloud';
+          audioPlayer = null;
+          URL.revokeObjectURL(audioUrl);
+          audioUrl = null;
+        };
+
+      } catch (err) {
+        console.error(err);
+        showMessage("Audio failed. See console.");
+      } finally {
+        readAloudBtn.disabled = false;
+        loadingIndicator.classList.add('hidden');
+      }
+    });
+
+    function browserSpeak(text) {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US";
+      speechSynthesis.cancel(); // ensure a clean start
+      speechSynthesis.speak(u);
+      readAloudBtn.textContent = "Reading...";
+      u.onend = () => { readAloudBtn.textContent = "Read Aloud"; };
+    }
+
+    function showMessage(msg) {
+      messageBox.textContent = msg;
+      setTimeout(() => (messageBox.textContent = ''), 4000);
+    }
+
+    function showDefinition(term, def) {
+      modalTerm.textContent = term;
+      modalDefinition.textContent = def;
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal(e) { if (e.target === modal) modal.classList.add('hidden'); }
+  </script>
+</body>
+</html>
